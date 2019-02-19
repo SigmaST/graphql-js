@@ -763,6 +763,11 @@ function defineFieldMap<TSource, TContext>(
       `${config.name}.${fieldName} should provide "deprecationReason" ` +
         'instead of "isDeprecated".',
     );
+
+    if(!fieldConfig.resolve && fieldConfig.resolveName){
+      fieldConfig.resolve = (obj) => obj[fieldConfig.resolveName];
+    }
+
     invariant(
       fieldConfig.resolve == null || typeof fieldConfig.resolve === 'function',
       `${config.name}.${fieldName} field resolver must be a function if ` +
