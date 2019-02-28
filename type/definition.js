@@ -566,10 +566,18 @@ function defineFieldMap(config) {
     !isPlainObj(fieldConfig) ? (0, _invariant.default)(0, "".concat(config.name, ".").concat(fieldName, " field config must be an object")) : void 0;
     !!fieldConfig.hasOwnProperty('isDeprecated') ? (0, _invariant.default)(0, "".concat(config.name, ".").concat(fieldName, " should provide \"deprecationReason\" ") + 'instead of "isDeprecated".') : void 0;
 
-    if (!fieldConfig.resolve && fieldConfig.resolveName) {
-      fieldConfig.resolve = function (obj) {
-        return obj[fieldConfig.resolveName];
-      };
+    if (!fieldConfig.resolve && fieldConfig.resolveName !== undefined) {
+      if (Array.isArray(fieldConfig.resolveName)) {
+        fieldConfig.resolve = function (obj) {
+          return fieldConfig.resolveName.reduce(function (m, p) {
+            return m ? m : obj[p];
+          }, null);
+        };
+      } else {
+        fieldConfig.resolve = function (obj) {
+          return fieldConfig.resolveName ? obj[fieldConfig.resolveName] : fieldConfig.resolveName;
+        };
+      }
     }
 
     !(fieldConfig.resolve == null || typeof fieldConfig.resolve === 'function') ? (0, _invariant.default)(0, "".concat(config.name, ".").concat(fieldName, " field resolver must be a function if ") + "provided, but got: ".concat((0, _inspect.default)(fieldConfig.resolve), ".")) : void 0;

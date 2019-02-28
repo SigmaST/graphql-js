@@ -764,8 +764,12 @@ function defineFieldMap<TSource, TContext>(
         'instead of "isDeprecated".',
     );
 
-    if(!fieldConfig.resolve && fieldConfig.resolveName){
-      fieldConfig.resolve = (obj) => obj[fieldConfig.resolveName];
+    if(!fieldConfig.resolve && fieldConfig.resolveName !== undefined){
+      if(Array.isArray(fieldConfig.resolveName)){
+        fieldConfig.resolve = (obj) => fieldConfig.resolveName.reduce((m, p) => m ? m : obj[p], null);
+      }else{
+        fieldConfig.resolve = (obj) => fieldConfig.resolveName ? obj[fieldConfig.resolveName] : fieldConfig.resolveName;
+      }
     }
 
     invariant(
